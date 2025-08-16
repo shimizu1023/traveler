@@ -4,12 +4,15 @@ class PostsController < ApplicationController
     @post = Post.new
   end
 
-  def create
-    post = Post.new(post_params)
-    post.user_id = current_user.id
-    post.save
-    redirect_to post_path(post.id)
+def create
+  @post = Post.new(post_params)
+  @post.user_id = current_user.id
+  if @post.save
+    redirect_to post_path(@post.id)
+  else
+    render :new, status: :unprocessable_entity
   end
+end
 
   def index
     @posts = Post.page(params[:page]).reverse_order
@@ -25,11 +28,14 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
   end
 
-  def update
-    post = Post.find(params[:id])
-    post.update(post_params)
-    redirect_to post_path(post.id)
+def update
+  @post = Post.find(params[:id])
+  if @post.update(post_params)
+    redirect_to post_path(@post.id)
+  else
+    render :edit, status: :unprocessable_entity
   end
+end
 
    def destroy
     post = Post.find(params[:id])
